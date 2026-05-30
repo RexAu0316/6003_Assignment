@@ -1,0 +1,234 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>CinemaVault API 测试用例</title>
+    <style>
+        body {
+            font-family: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
+            max-width: 900px;
+            margin: 2rem auto;
+            padding: 1rem;
+            background: #f1f5f9;
+        }
+        .card {
+            background: white;
+            border-radius: 1rem;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+        }
+        h2 {
+            margin-top: 0;
+            border-left: 5px solid #3b82f6;
+            padding-left: 1rem;
+        }
+        label {
+            display: inline-block;
+            width: 90px;
+            font-weight: 500;
+        }
+        input, select, textarea {
+            margin: 0.5rem 0;
+            padding: 8px 12px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            width: 260px;
+            font-size: 0.9rem;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 8px 20px;
+            border-radius: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 0.5rem;
+            transition: 0.2s;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        pre {
+            background: #f8fafc;
+            border-left: 4px solid #3b82f6;
+            padding: 1rem;
+            overflow-x: auto;
+            border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        .token-box {
+            background: #fef9c3;
+            border: 1px solid #eab308;
+            padding: 0.75rem;
+            border-radius: 12px;
+            font-family: monospace;
+            word-break: break-all;
+            font-size: 0.75rem;
+            margin-top: 1rem;
+        }
+        hr {
+            margin: 1rem 0;
+        }
+        .success {
+            color: #16a34a;
+            font-weight: bold;
+        }
+        .error {
+            color: #dc2626;
+        }
+    </style>
+</head>
+<body>
+
+<h1>🎬 CinemaVault API 功能测试</h1>
+<p style="color: #475569;">后端地址: <code>http://localhost:5001</code> (确保 <code>npm run dev</code> 已运行)</p>
+
+<!-- ==================== 1. 注册 ==================== -->
+<div class="card">
+    <h2>📝 测试1: 用户注册</h2>
+    <div>
+        <label>用户名:</label> <input type="text" id="regUsername" placeholder="例如: alice" value="alice"><br>
+        <label>邮箱:</label> <input type="email" id="regEmail" placeholder="user@example.com" value="alice@example.com"><br>
+        <label>密码:</label> <input type="password" id="regPassword" placeholder="至少6位" value="123456"><br>
+        <label>角色:</label>
+        <select id="regRole">
+            <option value="user">普通用户</option>
+            <option value="admin">管理员</option>
+        </select><br>
+        <button onclick="register()">注册新用户</button>
+    </div>
+    <div id="regResult"></div>
+</div>
+
+<!-- ==================== 2. 登录 ==================== -->
+<div class="card">
+    <h2>🔐 测试2: 用户登录</h2>
+    <div>
+        <label>邮箱:</label> <input type="email" id="loginEmail" placeholder="已注册的邮箱" value="alice@example.com"><br>
+        <label>密码:</label> <input type="password" id="loginPassword" placeholder="密码" value="123456"><br>
+        <button onclick="login()">登录并获取Token</button>
+    </div>
+    <div id="loginResult"></div>
+    <div id="tokenArea" style="display: none;" class="token-box"></div>
+</div>
+
+<!-- ==================== 3. 获取用户信息 ==================== -->
+<div class="card">
+    <h2>👤 测试3: 获取当前用户信息 (需要Token)</h2>
+    <div>
+        <label>Bearer Token:</label><br>
+        <textarea id="tokenInput" rows="2" cols="60" placeholder="粘贴登录返回的token" style="width: 95%;"></textarea><br>
+        <button onclick="getMe()">发送请求</button>
+    </div>
+    <div id="meResult"></div>
+</div>
+
+<script>
+    const API_BASE = 'http://localhost:5001';
+
+    // 通用显示函数
+    function showResult(containerId, data, isError = false) {
+        const container = document.getElementById(containerId);
+        const color = isError ? '#dc2626' : '#16a34a';
+        container.innerHTML = `<pre style="border-left-color: ${color};">${JSON.stringify(data, null, 2)}</pre>`;
+    }
+
+    // 注册
+    async function register() {
+        const username = document.getElementById('regUsername').value.trim();
+        const email = document.getElementById('regEmail').value.trim();
+        const password = document.getElementById('regPassword').value.trim();
+        const role = document.getElementById('regRole').value;
+
+        if (!username || !email || !password) {
+            alert("请填写用户名、邮箱和密码");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/register`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, email, password, role })
+            });
+            const data = await res.json();
+            showResult('regResult', data, !res.ok);
+            if (res.ok) {
+                // 自动填充登录框的邮箱
+                document.getElementById('loginEmail').value = email;
+                alert('✅ 注册成功！现在可以登录');
+            }
+        } catch (err) {
+            showResult('regResult', { error: err.message }, true);
+        }
+    }
+
+    // 登录
+    async function login() {
+        const email = document.getElementById('loginEmail').value.trim();
+        const password = document.getElementById('loginPassword').value.trim();
+        if (!email || !password) {
+            alert("请输入邮箱和密码");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/login`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, password })
+            });
+            const data = await res.json();
+            showResult('loginResult', data, !res.ok);
+            if (res.ok && data.token) {
+                const tokenArea = document.getElementById('tokenArea');
+                tokenArea.style.display = 'block';
+                tokenArea.innerHTML = `
+                    <strong>✅ 登录成功！你的Token：</strong><br>
+                    <code style="word-break:break-all;">${data.token}</code><br>
+                    <button onclick="copyTokenToClipboard('${data.token}')" style="margin-top:8px;">📋 复制Token</button>
+                `;
+                // 自动填入下面的textarea
+                document.getElementById('tokenInput').value = data.token;
+            } else {
+                document.getElementById('tokenArea').style.display = 'none';
+            }
+        } catch (err) {
+            showResult('loginResult', { error: err.message }, true);
+        }
+    }
+
+    // 获取当前用户信息
+    async function getMe() {
+        let token = document.getElementById('tokenInput').value.trim();
+        if (!token) {
+            alert("请先登录获取Token，或手动粘贴Token");
+            return;
+        }
+        // 如果用户复制时带了 "Bearer " 前缀，这里自动清理
+        if (token.startsWith('Bearer ')) token = token.slice(7);
+        try {
+            const res = await fetch(`${API_BASE}/api/auth/me`, {
+                method: 'GET',
+                headers: { 'Authorization': `Bearer ${token}` }
+            });
+            const data = await res.json();
+            showResult('meResult', data, !res.ok);
+        } catch (err) {
+            showResult('meResult', { error: err.message }, true);
+        }
+    }
+
+    function copyTokenToClipboard(token) {
+        navigator.clipboard.writeText(token).then(() => {
+            alert('Token已复制到剪贴板');
+        }).catch(() => {
+            alert('手动复制吧');
+        });
+    }
+</script>
+</body>
+</html>

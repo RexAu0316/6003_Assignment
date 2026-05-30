@@ -2,6 +2,7 @@ import express from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './config/db';
+import authRoutes from './routes/auth.routes';
 
 dotenv.config();
 
@@ -23,6 +24,8 @@ app.get('/api/db-test', async (req, res) => {
         res.status(500).json({ success: false, error: String(error) });
     }
 });
+
+app.use('/api/auth', authRoutes);
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);
