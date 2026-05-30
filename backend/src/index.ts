@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import pool from './config/db';
 import authRoutes from './routes/auth.routes';
+import filmRoutes from './routes/film.routes';
 
 dotenv.config();
 
@@ -26,6 +27,9 @@ app.get('/api/db-test', async (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+
+app.use('/api/films', filmRoutes);
+
 
 app.listen(port, () => {
     console.log(`Server running on http://localhost:${port}`);

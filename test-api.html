@@ -3,39 +3,63 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>CinemaVault API 测试用例</title>
+    <title>CinemaVault 完整API测试</title>
     <style>
+        * {
+            box-sizing: border-box;
+        }
         body {
-            font-family: system-ui, 'Segoe UI', 'Helvetica Neue', sans-serif;
-            max-width: 900px;
-            margin: 2rem auto;
-            padding: 1rem;
+            font-family: system-ui, 'Segoe UI', sans-serif;
             background: #f1f5f9;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
         }
         .card {
             background: white;
-            border-radius: 1rem;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-            margin-bottom: 2rem;
-            padding: 1.5rem;
+            border-radius: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+            margin-bottom: 24px;
+            padding: 20px;
+            transition: 0.2s;
         }
         h2 {
             margin-top: 0;
             border-left: 5px solid #3b82f6;
-            padding-left: 1rem;
+            padding-left: 12px;
+            font-size: 1.4rem;
+        }
+        h3 {
+            margin: 0 0 12px 0;
+            font-size: 1.2rem;
+            color: #1e293b;
+        }
+        .form-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: flex-end;
+            margin-bottom: 16px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         label {
-            display: inline-block;
-            width: 90px;
-            font-weight: 500;
+            font-weight: 600;
+            font-size: 0.8rem;
+            color: #334155;
         }
         input, select, textarea {
-            margin: 0.5rem 0;
             padding: 8px 12px;
-            border: 1px solid #ccc;
+            border: 1px solid #cbd5e1;
             border-radius: 8px;
-            width: 260px;
             font-size: 0.9rem;
+            min-width: 180px;
         }
         button {
             background: #3b82f6;
@@ -45,36 +69,71 @@
             border-radius: 24px;
             font-weight: bold;
             cursor: pointer;
-            margin-top: 0.5rem;
             transition: 0.2s;
+            font-size: 0.85rem;
         }
         button:hover {
             background: #2563eb;
         }
+        .danger-btn {
+            background: #ef4444;
+        }
+        .danger-btn:hover {
+            background: #dc2626;
+        }
+        .secondary-btn {
+            background: #64748b;
+        }
         pre {
             background: #f8fafc;
             border-left: 4px solid #3b82f6;
-            padding: 1rem;
+            padding: 12px;
             overflow-x: auto;
             border-radius: 12px;
-            font-size: 0.85rem;
+            font-size: 0.8rem;
+            margin-top: 12px;
         }
-        .token-box {
+        .token-area {
             background: #fef9c3;
             border: 1px solid #eab308;
-            padding: 0.75rem;
+            padding: 10px;
             border-radius: 12px;
             font-family: monospace;
             word-break: break-all;
-            font-size: 0.75rem;
-            margin-top: 1rem;
+            font-size: 0.7rem;
+            margin-top: 12px;
+        }
+        .film-item {
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 12px;
+            margin-bottom: 12px;
+            background: #fefefe;
+        }
+        .film-title {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+        .film-meta {
+            color: #475569;
+            font-size: 0.8rem;
+            margin: 6px 0;
+        }
+        .film-actions {
+            margin-top: 8px;
+            display: flex;
+            gap: 8px;
+        }
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 16px;
         }
         hr {
-            margin: 1rem 0;
+            margin: 16px 0;
         }
         .success {
             color: #16a34a;
-            font-weight: bold;
         }
         .error {
             color: #dc2626;
@@ -82,153 +141,313 @@
     </style>
 </head>
 <body>
+<div class="container">
+    <h1>🎬 CinemaVault 完整 API 测试工具</h1>
+    <p>后端: <code>http://localhost:5001</code> (确保 <code>npm run dev</code> 运行中)</p>
 
-<h1>🎬 CinemaVault API 功能测试</h1>
-<p style="color: #475569;">后端地址: <code>http://localhost:5001</code> (确保 <code>npm run dev</code> 已运行)</p>
-
-<!-- ==================== 1. 注册 ==================== -->
-<div class="card">
-    <h2>📝 测试1: 用户注册</h2>
-    <div>
-        <label>用户名:</label> <input type="text" id="regUsername" placeholder="例如: alice" value="alice"><br>
-        <label>邮箱:</label> <input type="email" id="regEmail" placeholder="user@example.com" value="alice@example.com"><br>
-        <label>密码:</label> <input type="password" id="regPassword" placeholder="至少6位" value="123456"><br>
-        <label>角色:</label>
-        <select id="regRole">
-            <option value="user">普通用户</option>
-            <option value="admin">管理员</option>
-        </select><br>
-        <button onclick="register()">注册新用户</button>
+    <!-- ==================== 认证部分 ==================== -->
+    <div class="card">
+        <h2>🔐 认证模块</h2>
+        <div style="display: flex; gap: 24px; flex-wrap: wrap;">
+            <div style="flex:1">
+                <h3>注册</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>用户名</label><input type="text" id="regUser" placeholder="alice"></div>
+                    <div class="form-group"><label>邮箱</label><input type="email" id="regEmail" placeholder="user@example.com"></div>
+                    <div class="form-group"><label>密码</label><input type="password" id="regPass" placeholder="123456"></div>
+                    <div class="form-group"><label>角色</label><select id="regRole"><option value="user">普通用户</option><option value="admin">管理员</option></select></div>
+                    <button onclick="register()">注册</button>
+                </div>
+                <div id="regResult"></div>
+            </div>
+            <div style="flex:1">
+                <h3>登录</h3>
+                <div class="form-row">
+                    <div class="form-group"><label>邮箱</label><input type="email" id="loginEmail" placeholder="user@example.com"></div>
+                    <div class="form-group"><label>密码</label><input type="password" id="loginPass" placeholder="123456"></div>
+                    <button onclick="login()">登录</button>
+                </div>
+                <div id="loginResult"></div>
+                <div id="tokenDisplay" class="token-area" style="display:none;"></div>
+            </div>
+            <div style="flex:1">
+                <h3>当前用户信息</h3>
+                <div class="form-row">
+                    <textarea id="tokenInput" rows="2" placeholder="粘贴Token" style="width:100%"></textarea>
+                    <button onclick="getMe()">获取信息</button>
+                </div>
+                <div id="meResult"></div>
+            </div>
+        </div>
     </div>
-    <div id="regResult"></div>
-</div>
 
-<!-- ==================== 2. 登录 ==================== -->
-<div class="card">
-    <h2>🔐 测试2: 用户登录</h2>
-    <div>
-        <label>邮箱:</label> <input type="email" id="loginEmail" placeholder="已注册的邮箱" value="alice@example.com"><br>
-        <label>密码:</label> <input type="password" id="loginPassword" placeholder="密码" value="123456"><br>
-        <button onclick="login()">登录并获取Token</button>
+    <!-- ==================== 电影管理 ==================== -->
+    <div class="card">
+        <h2>🎞️ 电影管理 (管理员需Token)</h2>
+        <div style="display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;">
+            <input type="text" id="filmTitle" placeholder="电影名称" style="flex:1">
+            <input type="text" id="filmGenre" placeholder="类型" style="flex:1">
+            <input type="number" id="filmYear" placeholder="年份" style="flex:1">
+            <input type="number" step="0.1" id="filmRating" placeholder="评分 (0-10)" style="flex:1">
+            <button onclick="createFilm()">➕ 添加电影</button>
+        </div>
+        <div style="margin-bottom: 20px;">
+            <div class="form-row">
+                <input type="text" id="searchTitle" placeholder="搜索标题">
+                <input type="text" id="searchGenre" placeholder="类型">
+                <input type="number" id="searchYear" placeholder="年份">
+                <input type="number" step="0.1" id="searchMinRating" placeholder="最低评分">
+                <button onclick="searchFilms()">🔍 搜索</button>
+                <button onclick="listAllFilms()" class="secondary-btn">📋 显示全部</button>
+            </div>
+        </div>
+        <div id="filmsList">
+            <p>点击“显示全部”或搜索来加载电影列表</p>
+        </div>
     </div>
-    <div id="loginResult"></div>
-    <div id="tokenArea" style="display: none;" class="token-box"></div>
-</div>
-
-<!-- ==================== 3. 获取用户信息 ==================== -->
-<div class="card">
-    <h2>👤 测试3: 获取当前用户信息 (需要Token)</h2>
-    <div>
-        <label>Bearer Token:</label><br>
-        <textarea id="tokenInput" rows="2" cols="60" placeholder="粘贴登录返回的token" style="width: 95%;"></textarea><br>
-        <button onclick="getMe()">发送请求</button>
-    </div>
-    <div id="meResult"></div>
 </div>
 
 <script>
     const API_BASE = 'http://localhost:5001';
 
-    // 通用显示函数
+    // ---------- 通用辅助 ----------
     function showResult(containerId, data, isError = false) {
         const container = document.getElementById(containerId);
-        const color = isError ? '#dc2626' : '#16a34a';
-        container.innerHTML = `<pre style="border-left-color: ${color};">${JSON.stringify(data, null, 2)}</pre>`;
+        container.innerHTML = `<pre>${JSON.stringify(data, null, 2)}</pre>`;
+        if (isError) container.style.borderLeft = '3px solid #dc2626';
+        else container.style.borderLeft = 'none';
     }
 
-    // 注册
+    // 获取当前存储的token（优先从文本框取，否则从localStorage）
+    function getAuthToken() {
+        let token = document.getElementById('tokenInput').value.trim();
+        if (!token) token = localStorage.getItem('authToken') || '';
+        if (token) document.getElementById('tokenInput').value = token;
+        return token;
+    }
+
+    function setToken(token) {
+        localStorage.setItem('authToken', token);
+        document.getElementById('tokenInput').value = token;
+    }
+
+    // ---------- 认证API ----------
     async function register() {
-        const username = document.getElementById('regUsername').value.trim();
+        const username = document.getElementById('regUser').value.trim();
         const email = document.getElementById('regEmail').value.trim();
-        const password = document.getElementById('regPassword').value.trim();
+        const password = document.getElementById('regPass').value.trim();
         const role = document.getElementById('regRole').value;
-
-        if (!username || !email || !password) {
-            alert("请填写用户名、邮箱和密码");
-            return;
-        }
-
+        if (!username || !email || !password) return alert('请完整填写');
         try {
             const res = await fetch(`${API_BASE}/api/auth/register`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ username, email, password, role })
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({username, email, password, role})
             });
             const data = await res.json();
             showResult('regResult', data, !res.ok);
             if (res.ok) {
-                // 自动填充登录框的邮箱
+                alert('注册成功！现在可以登录');
                 document.getElementById('loginEmail').value = email;
-                alert('✅ 注册成功！现在可以登录');
             }
-        } catch (err) {
-            showResult('regResult', { error: err.message }, true);
-        }
+        } catch(e) { showResult('regResult', {error: e.message}, true); }
     }
 
-    // 登录
     async function login() {
         const email = document.getElementById('loginEmail').value.trim();
-        const password = document.getElementById('loginPassword').value.trim();
-        if (!email || !password) {
-            alert("请输入邮箱和密码");
-            return;
-        }
-
+        const password = document.getElementById('loginPass').value.trim();
+        if (!email || !password) return alert('请输入邮箱和密码');
         try {
             const res = await fetch(`${API_BASE}/api/auth/login`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email, password })
+                method: 'POST', headers: {'Content-Type': 'application/json'},
+                body: JSON.stringify({email, password})
             });
             const data = await res.json();
             showResult('loginResult', data, !res.ok);
             if (res.ok && data.token) {
-                const tokenArea = document.getElementById('tokenArea');
-                tokenArea.style.display = 'block';
-                tokenArea.innerHTML = `
-                    <strong>✅ 登录成功！你的Token：</strong><br>
-                    <code style="word-break:break-all;">${data.token}</code><br>
-                    <button onclick="copyTokenToClipboard('${data.token}')" style="margin-top:8px;">📋 复制Token</button>
-                `;
-                // 自动填入下面的textarea
-                document.getElementById('tokenInput').value = data.token;
-            } else {
-                document.getElementById('tokenArea').style.display = 'none';
+                setToken(data.token);
+                const tokenDiv = document.getElementById('tokenDisplay');
+                tokenDiv.style.display = 'block';
+                tokenDiv.innerHTML = `<strong>✅ Token已保存 (localStorage)</strong><br><code>${data.token}</code><br><button onclick="copyToClipboard('${data.token}')">复制</button>`;
+                alert('登录成功，Token已存储。现在可使用管理员功能。');
+                listAllFilms(); // 登录后自动加载电影列表
             }
-        } catch (err) {
-            showResult('loginResult', { error: err.message }, true);
-        }
+        } catch(e) { showResult('loginResult', {error: e.message}, true); }
     }
 
-    // 获取当前用户信息
     async function getMe() {
-        let token = document.getElementById('tokenInput').value.trim();
-        if (!token) {
-            alert("请先登录获取Token，或手动粘贴Token");
-            return;
-        }
-        // 如果用户复制时带了 "Bearer " 前缀，这里自动清理
-        if (token.startsWith('Bearer ')) token = token.slice(7);
+        let token = getAuthToken();
+        if (!token) return alert('请先登录或粘贴Token');
         try {
             const res = await fetch(`${API_BASE}/api/auth/me`, {
-                method: 'GET',
-                headers: { 'Authorization': `Bearer ${token}` }
+                headers: {'Authorization': `Bearer ${token}`}
             });
             const data = await res.json();
             showResult('meResult', data, !res.ok);
-        } catch (err) {
-            showResult('meResult', { error: err.message }, true);
-        }
+        } catch(e) { showResult('meResult', {error: e.message}, true); }
     }
 
-    function copyTokenToClipboard(token) {
-        navigator.clipboard.writeText(token).then(() => {
-            alert('Token已复制到剪贴板');
-        }).catch(() => {
-            alert('手动复制吧');
+    // ---------- 电影API ----------
+    async function listAllFilms() {
+        try {
+            const res = await fetch(`${API_BASE}/api/films`);
+            const films = await res.json();
+            renderFilms(films);
+        } catch(e) { document.getElementById('filmsList').innerHTML = `<p class="error">加载失败: ${e.message}</p>`; }
+    }
+
+    async function searchFilms() {
+        const title = document.getElementById('searchTitle').value.trim();
+        const genre = document.getElementById('searchGenre').value.trim();
+        const year = document.getElementById('searchYear').value.trim();
+        const minRating = document.getElementById('searchMinRating').value.trim();
+        const params = new URLSearchParams();
+        if (title) params.append('title', title);
+        if (genre) params.append('genre', genre);
+        if (year) params.append('year', year);
+        if (minRating) params.append('minRating', minRating);
+        try {
+            const res = await fetch(`${API_BASE}/api/films/search?${params.toString()}`);
+            const films = await res.json();
+            renderFilms(films);
+        } catch(e) { document.getElementById('filmsList').innerHTML = `<p class="error">搜索失败: ${e.message}</p>`; }
+    }
+
+    async function createFilm() {
+        const token = getAuthToken();
+        if (!token) return alert('需要管理员Token，请先登录管理员账号');
+        const title = document.getElementById('filmTitle').value.trim();
+        const genre = document.getElementById('filmGenre').value.trim();
+        const year = parseInt(document.getElementById('filmYear').value);
+        const rating = parseFloat(document.getElementById('filmRating').value);
+        if (!title) return alert('电影名称不能为空');
+        const body = { title };
+        if (genre) body.genre = genre;
+        if (!isNaN(year)) body.year = year;
+        if (!isNaN(rating)) body.rating = rating;
+        try {
+            const res = await fetch(`${API_BASE}/api/films`, {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+                body: JSON.stringify(body)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('电影添加成功');
+                listAllFilms();
+                // 清空表单
+                document.getElementById('filmTitle').value = '';
+                document.getElementById('filmGenre').value = '';
+                document.getElementById('filmYear').value = '';
+                document.getElementById('filmRating').value = '';
+            } else {
+                alert('添加失败: ' + (data.message || '权限不足或格式错误'));
+            }
+        } catch(e) { alert('请求失败: '+e.message); }
+    }
+
+    async function updateFilm(id, newData) {
+        const token = getAuthToken();
+        if (!token) return alert('需要管理员Token');
+        try {
+            const res = await fetch(`${API_BASE}/api/films/${id}`, {
+                method: 'PUT',
+                headers: {'Content-Type': 'application/json', 'Authorization': `Bearer ${token}`},
+                body: JSON.stringify(newData)
+            });
+            const data = await res.json();
+            if (res.ok) {
+                alert('更新成功');
+                listAllFilms();
+            } else {
+                alert('更新失败: ' + (data.message || '无权限'));
+            }
+        } catch(e) { alert('错误: '+e.message); }
+    }
+
+    async function deleteFilm(id) {
+        if (!confirm('确定要删除这部电影吗？')) return;
+        const token = getAuthToken();
+        if (!token) return alert('需要管理员Token');
+        try {
+            const res = await fetch(`${API_BASE}/api/films/${id}`, {
+                method: 'DELETE',
+                headers: {'Authorization': `Bearer ${token}`}
+            });
+            if (res.ok) {
+                alert('删除成功');
+                listAllFilms();
+            } else {
+                const data = await res.json();
+                alert('删除失败: ' + (data.message || '权限不足'));
+            }
+        } catch(e) { alert('请求失败: '+e.message); }
+    }
+
+    // 渲染电影列表（带编辑/删除按钮）
+    function renderFilms(films) {
+        const container = document.getElementById('filmsList');
+        if (!Array.isArray(films)) {
+            container.innerHTML = `<pre>${JSON.stringify(films, null, 2)}</pre>`;
+            return;
+        }
+        if (films.length === 0) {
+            container.innerHTML = '<p>暂无电影数据。</p>';
+            return;
+        }
+        let html = `<div class="grid">`;
+        films.forEach(f => {
+            html += `
+                <div class="film-item">
+                    <div class="film-title">${escapeHtml(f.title)}</div>
+                    <div class="film-meta">${f.genre || '未分类'} | ${f.year || '未知'} | 评分: ${f.rating ?? '无'}</div>
+                    <div class="film-meta">ID: ${f.id}</div>
+                    <div class="film-actions">
+                        <button onclick="editFilmPrompt(${f.id}, '${escapeHtml(f.title)}', '${f.genre || ''}', ${f.year || ''}, ${f.rating ?? ''})">✏️ 编辑</button>
+                        <button class="danger-btn" onclick="deleteFilm(${f.id})">🗑️ 删除</button>
+                    </div>
+                </div>
+            `;
+        });
+        html += `</div>`;
+        container.innerHTML = html;
+    }
+
+    // 编辑弹窗 (简化)
+    window.editFilmPrompt = function(id, oldTitle, oldGenre, oldYear, oldRating) {
+        const newTitle = prompt("新标题", oldTitle);
+        if (newTitle === null) return;
+        const updateData = { title: newTitle };
+        const newGenre = prompt("新类型 (留空不变)", oldGenre);
+        if (newGenre !== null) updateData.genre = newGenre || undefined;
+        const newYear = prompt("年份 (留空不变)", oldYear);
+        if (newYear !== null) {
+            const y = parseInt(newYear);
+            if (!isNaN(y)) updateData.year = y;
+        }
+        const newRating = prompt("评分 (0-10，留空不变)", oldRating);
+        if (newRating !== null) {
+            const r = parseFloat(newRating);
+            if (!isNaN(r)) updateData.rating = r;
+        }
+        updateFilm(id, updateData);
+    };
+
+    function escapeHtml(str) {
+        if (!str) return '';
+        return str.replace(/[&<>]/g, function(m) {
+            if (m === '&') return '&amp;';
+            if (m === '<') return '&lt;';
+            if (m === '>') return '&gt;';
+            return m;
         });
     }
+
+    function copyToClipboard(text) {
+        navigator.clipboard.writeText(text).then(() => alert('已复制')).catch(() => alert('手动复制'));
+    }
+
+    // 初始加载全部电影
+    listAllFilms();
 </script>
 </body>
 </html>
