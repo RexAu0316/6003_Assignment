@@ -6,7 +6,7 @@ export interface AuthRequest extends Request {
         id: number;
         email: string;
         role: string;
-        username: string;   // 添加这一行
+        username: string;
     };
 }
 

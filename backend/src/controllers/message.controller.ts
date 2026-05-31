@@ -4,6 +4,7 @@ import { createMessage, getUserMessages, getAllMessages, replyToMessage, deleteM
 
 // 用户发送消息
 export const sendMessage = async (req: AuthRequest, res: Response) => {
+    console.log('User:', req.user); 
     try {
         if (!req.user) {
             res.status(401).json({ message: 'Unauthorized' });

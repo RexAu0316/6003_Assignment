@@ -76,7 +76,7 @@ export const login = async (req: Request, res: Response) => {
             process.env.JWT_SECRET!,
             { expiresIn: '7d' }
         );
-
+        
         const { password_hash, ...userWithoutPassword } = user;
         res.json({
             message: 'Login successful',
