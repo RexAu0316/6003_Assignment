@@ -10,6 +10,7 @@ import Navbar from './components/Navbar';
 import Favorites from './pages/Favorites';
 import MyMessages from './pages/MyMessages';
 import AdminMessages from './pages/AdminMessages';
+import Profile from './pages/Profile';
 
 function App() {
   return (
@@ -25,6 +26,11 @@ function App() {
             <PrivateRoute>
               <MyMessages />
             </PrivateRoute>
+          } />
+          <Route path="/profile" element={
+              <PrivateRoute>
+                  <Profile />
+              </PrivateRoute>
           } />
           <Route path="/admin/messages" element={
             <PrivateRoute adminOnly>

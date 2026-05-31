@@ -8,6 +8,8 @@ import swaggerUi from 'swagger-ui-express';
 import specs from './swagger';
 import favoriteRoutes from './routes/favorite.routes';
 import messageRoutes from './routes/message.routes';
+import path from 'path';
+import userRoutes from './routes/user.routes';
 
 dotenv.config();
 
@@ -55,6 +57,10 @@ app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 app.use('/api/favorites', favoriteRoutes);
 
 app.use('/api/messages', messageRoutes);
+
+app.use('/api/users', userRoutes);
+
+app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // 仅在直接运行此文件时启动服务器（用于开发），测试时不会自动监听
 if (require.main === module) {
