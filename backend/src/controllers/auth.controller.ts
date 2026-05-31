@@ -29,7 +29,12 @@ export const register = async (req: Request, res: Response) => {
         const newUser = await createUser(username, email, password, userRole);
 
         const token = jwt.sign(
-            { id: newUser.id, email: newUser.email, role: newUser.role },
+            { 
+                id: newUser.id, 
+                email: newUser.email, 
+                role: newUser.role, 
+                username: newUser.username
+            },
             process.env.JWT_SECRET!,
             { expiresIn: '7d' }
         );
@@ -67,7 +72,7 @@ export const login = async (req: Request, res: Response) => {
         }
 
         const token = jwt.sign(
-            { id: user.id, email: user.email, role: user.role },
+            { id: user.id, email: user.email, role: user.role, username: user.username },
             process.env.JWT_SECRET!,
             { expiresIn: '7d' }
         );

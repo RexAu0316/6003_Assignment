@@ -10,8 +10,15 @@ const Navbar = () => {
       {user ? (
         <>
           <span>Welcome, {user.username} ({user.role})</span>
-          {user.role === 'admin' && <Link to="/admin">Admin Panel</Link>}
+          
           <Link to="/favorites">My Favorites</Link>
+          <Link to="/messages">My Messages</Link>
+          {user.role === 'admin' && (
+            <>
+              <Link to="/admin">Admin Panel</Link>
+              <Link to="/admin/messages">Manage Messages</Link>
+            </>
+          )}
           <button onClick={logout}>Logout</button>
         </>
       ) : (

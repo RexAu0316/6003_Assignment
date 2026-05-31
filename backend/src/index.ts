@@ -7,6 +7,7 @@ import filmRoutes from './routes/film.routes';
 import swaggerUi from 'swagger-ui-express';
 import specs from './swagger';
 import favoriteRoutes from './routes/favorite.routes';
+import messageRoutes from './routes/message.routes';
 
 dotenv.config();
 
@@ -52,6 +53,8 @@ app.use('/api/films', filmRoutes);
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 
 app.use('/api/favorites', favoriteRoutes);
+
+app.use('/api/messages', messageRoutes);
 
 // 仅在直接运行此文件时启动服务器（用于开发），测试时不会自动监听
 if (require.main === module) {

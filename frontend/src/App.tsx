@@ -8,6 +8,9 @@ import FilmList from './pages/FilmList';
 import AdminPanel from './pages/AdminPanel';
 import Navbar from './components/Navbar';
 import Favorites from './pages/Favorites';
+import MyMessages from './pages/MyMessages';
+import AdminMessages from './pages/AdminMessages';
+
 function App() {
   return (
     <AuthProvider>
@@ -18,6 +21,16 @@ function App() {
           <Route path="/register" element={<Register />} />
           <Route path="/" element={<FilmList />} />
           <Route path="/films/:id" element={<FilmDetail />} />
+          <Route path="/messages" element={
+            <PrivateRoute>
+              <MyMessages />
+            </PrivateRoute>
+          } />
+          <Route path="/admin/messages" element={
+            <PrivateRoute adminOnly>
+              <AdminMessages />
+            </PrivateRoute>
+          } />
           <Route path="/favorites" element={
             <PrivateRoute>
               <Favorites />
