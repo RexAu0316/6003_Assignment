@@ -20,6 +20,18 @@ app.get('/api/health', (req, res) => {
     res.json({ status: 'OK', message: 'Backend is running' });
 });
 
+app.get('/', (req, res) => {
+    res.json({
+        message: 'CinemaVault API is running',
+        endpoints: {
+            docs: '/api-docs',
+            health: '/api/health',
+            auth: '/api/auth',
+            films: '/api/films'
+        }
+    });
+});
+
 // 数据库测试（可选）
 app.get('/api/db-test', async (req, res) => {
     try {
